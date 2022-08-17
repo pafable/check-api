@@ -3,6 +3,11 @@ from typing import Final
 
 
 class ApiEndpoint(Enum):
+    """
+    APIs to check
+    1. api.publicapis.org
+    2. cat-fact.herokuapp.com
+    """
     API1: Final = ('https://api.publicapis.org/random', 'first')
     API2: Final = ('https://api.publicapis.org/categories', 'second')
     API3: Final = ('https://cat-fact.herokuapp.com/facts', 'third')
@@ -17,6 +22,12 @@ class ApiEndpoint(Enum):
 
 
 class Ec2Images(Enum):
+    """
+    AWS ami images and regions
+    us-east-1 - ami-090fa75af13c156b4
+    us-west-2 - ami-0cea098ed2ac54925
+    (more to be added)
+    """
     USE1: Final = ('ami-090fa75af13c156b4', 'us-east-1')
     USW2: Final = ('ami-0cea098ed2ac54925', 'us-west-2')
 
@@ -26,6 +37,11 @@ class Ec2Images(Enum):
 
 
 class InstanceTypes(Enum):
+    """
+    AWS instance types
+    Dev - t2.micro
+    Prod - t3.large
+    """
     dev: Final = 't2.micro'
     prod: Final = 't3.large'
 
