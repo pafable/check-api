@@ -21,3 +21,7 @@ Set the following environment variables.
 - SSH_KEY_USW2
 - VM_USER
 - VM_PASS
+
+### SDKs Used
+- https://github.com/boto/boto3
+- https://github.com/Azure/azure-sdk-for-python

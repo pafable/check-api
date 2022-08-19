@@ -5,6 +5,11 @@ network_client = NetworkManagementClient(AzureResources.dev.get_az_cred, AzureRe
 
 
 async def create_vnet(rg: str) -> str:
+    """
+    Creates an Azure vnet
+    :param rg:
+    :return:
+    """
     vnet = network_client.virtual_networks.begin_create_or_update(
         rg,
         AzureResources.dev.vnet_name,
@@ -20,6 +25,11 @@ async def create_vnet(rg: str) -> str:
 
 
 async def create_subnet(rg: str) -> str:
+    """
+    Creates an Azure subnet
+    :param rg:
+    :return:
+    """
     subnet = network_client.subnets.begin_create_or_update(
         rg,
         AzureResources.dev.vnet_name,
@@ -31,6 +41,11 @@ async def create_subnet(rg: str) -> str:
 
 
 async def create_ip(rg: str) -> str:
+    """
+    Creates an Azure ip address
+    :param rg:
+    :return:
+    """
     ip = network_client.public_ip_addresses.begin_create_or_update(
         rg,
         AzureResources.dev.ip_name,
@@ -46,6 +61,13 @@ async def create_ip(rg: str) -> str:
 
 
 async def create_nic(rg: str, subnet_id: str, ip_address_id: str) -> str:
+    """
+    Creates an Azure network interface
+    :param rg:
+    :param subnet_id:
+    :param ip_address_id:
+    :return:
+    """
     nic = network_client.network_interfaces.begin_create_or_update(
         rg,
         AzureResources.dev.nic_name,
