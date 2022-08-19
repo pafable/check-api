@@ -41,11 +41,23 @@ class AzureResources(Enum):
     """
     Constants for Resources in Azure
     """
-    dev: Final = ('test-rg100', 'eastus')
+    dev: Final = ('Standard_B1s', 'eastus', 'dev-vnet', 'dev-subnet', 'dev-ip', 'dev-ip-config', 'dev-nic')
 
-    def __init__(self, rg_name: str, region: str) -> None:
-        self.rg_name = rg_name
-        self.region = region
+    def __init__(self,
+                 vm_size: str,
+                 location: str,
+                 vnet_name: str,
+                 subnet_name: str,
+                 ip_name: str,
+                 ip_conf_name: str,
+                 nic_name: str) -> None:
+        self.vm_size = vm_size
+        self.location = location
+        self.vnet_name = vnet_name
+        self.subnet_name = subnet_name
+        self.ip_name = ip_name
+        self.ip_conf_name = ip_conf_name
+        self.nic_name = nic_name
 
     @property
     def get_az_sub_id(self) -> str:
