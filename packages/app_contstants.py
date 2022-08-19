@@ -30,7 +30,11 @@ class AwsResources(Enum):
     dev: Final = ('t2.micro', 'azure-subscription-id-dev', 'us-east-1', 'ami-090fa75af13c156b4')
     prod: Final = ('t2.micro', 'azure-subscription-id-prod', 'us-west-2', 'ami-0cea098ed2ac54925')
 
-    def __init__(self, instance_type: str, az_sub_id: str, region: str, ami_id: str) -> None:
+    def __init__(self,
+                 instance_type: str,
+                 az_sub_id: str,
+                 region: str,
+                 ami_id: str) -> None:
         self.instance_type = instance_type
         self.az_sub_id = az_sub_id
         self.region = region

@@ -50,6 +50,7 @@ async def main():
                 1
             )
         )
+        await aws_use1_create
 
         # Azure resource group creation
         azure_eus_create_rg = asyncio.create_task(
@@ -58,24 +59,24 @@ async def main():
                 AzureResources.dev.location
             )
         )
-
         await azure_eus_create_rg
 
+        # Azure vnet creation
         azure_eus_create_vnet = asyncio.create_task(
             create_vnet(azure_eus_create_rg.result())
         )
-        await azure_eus_create_vnet
 
+        # Azure subnet creation
         azure_eus_create_sub = asyncio.create_task(
             create_subnet(azure_eus_create_rg.result())
         )
-        await azure_eus_create_sub
 
+        # Azure ip address creation
         azure_eus_create_ip = asyncio.create_task(
             create_ip(azure_eus_create_rg.result())
         )
-        await azure_eus_create_ip
 
+        # Azure nic creation
         azure_eus_create_nic = asyncio.create_task(
             create_nic(
                 azure_eus_create_rg.result(),
@@ -83,22 +84,25 @@ async def main():
                 azure_eus_create_ip.result().id
             )
         )
+
+        # These 4 need to be created before creating the Azure vm!
+        await azure_eus_create_vnet
+        await azure_eus_create_sub
+        await azure_eus_create_ip
         await azure_eus_create_nic
 
+        # Azure vm creation
         azure_eus_create_vm = asyncio.create_task(
             create_vm(
                 azure_eus_create_rg.result(),
                 EUS_VM_NAME[0],
                 AzureResources.dev.location,
                 AzureResources.dev.vm_size,
-                os.environ['USER'],
-                os.environ['PASS'],
+                os.environ['VM_USER'],
+                os.environ['VM_PASS'],
                 azure_eus_create_nic.result().id
             )
         )
-
-        await aws_use1_create
-        logging.info(f'USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
         await azure_eus_create_vm
 
         if len(api_check) >= 10:
@@ -114,7 +118,9 @@ async def main():
                 )
             )
             await aws_usw2_create
+
             logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
+
         logging.info(f'AWS USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
         logging.info(f'Azure EUS Instance: {azure_eus_create_vm.result()}')
 
@@ -122,26 +128,28 @@ async def main():
         UNCOMMENT LINES BELOW TO TERMINATE INSTANCES
         FOR TESTING ONLY!
         '''
-        aws_use1_destroy = destroy_ec2_instance(
-            [aws_use1_create.result()["Instances"][0]["InstanceId"]],
-            AwsResources.dev.region
-        )
-
-        if aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            raise logging.error(f'Destroy error code: {aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
-        else:
-            logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
-
-        if len(api_check) >= 10:
-            aws_usw2_destroy = destroy_ec2_instance(
-                [aws_usw2_create.result()["Instances"][0]["InstanceId"]],
-                AwsResources.prod.region
-            )
-
-        if aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            raise logging.error(f'Destroy error code: {aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
-        else:
-            logging.info(f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
+        # aws_use1_destroy = destroy_ec2_instance(
+        #     [aws_use1_create.result()["Instances"][0]["InstanceId"]],
+        #     AwsResources.dev.region
+        # )
+        #
+        # if aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        #     raise logging.error(f'Destroy error code: {aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
+        # else:
+        #     logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
+        #
+        # if len(api_check) >= 10:
+        #     aws_usw2_destroy = destroy_ec2_instance(
+        #         [aws_usw2_create.result()["Instances"][0]["InstanceId"]],
+        #         AwsResources.prod.region
+        #     )
+        #
+        #     if aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        #         raise logging.error(f'Destroy error code: {aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
+        #     else:
+        #         logging.info(
+        #           f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
+        #          )
     except Exception as e:
         logging.error(e)
 
