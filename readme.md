@@ -2,6 +2,8 @@
 
 This will deploy an instance/virtual machine in AWS and Azure.
 
+REQUIRED PYTHON VERSION: 3.8
+
 ### Region deployment:
 - AWS us-east-1
 - AWS us-west-2 *
