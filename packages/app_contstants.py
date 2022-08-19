@@ -28,7 +28,7 @@ class AwsResources(Enum):
     Constants for resources stored or used in AWS
     """
     dev: Final = ('t2.micro', 'azure-subscription-id-dev', 'us-east-1', 'ami-090fa75af13c156b4')
-    prod: Final = ('t3.large', 'azure-subscription-id-prod', 'us-west-2', 'ami-0cea098ed2ac54925')
+    prod: Final = ('t2.micro', 'azure-subscription-id-prod', 'us-west-2', 'ami-0cea098ed2ac54925')
 
     def __init__(self, instance_type: str, az_sub_id: str, region: str, ami_id: str) -> None:
         self.instance_type = instance_type
