@@ -1,7 +1,7 @@
 from azure.identity import DefaultAzureCredential
 from enum import Enum
 from typing import Final
-import boto3
+import os
 
 
 class ApiEndpoint(Enum):
@@ -65,8 +65,7 @@ class AzureResources(Enum):
 
     @property
     def get_az_sub_id(self) -> str:
-        ssm = boto3.client('ssm', region_name=AwsResources.dev.region)
-        return ssm.get_parameter(Name=AwsResources.dev.az_sub_id, WithDecryption=True)["Parameter"]["Value"]
+        return os.environ['AZURE_SUB_ID']
 
     @property
     def get_az_cred(self):
