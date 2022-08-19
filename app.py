@@ -50,7 +50,24 @@ async def main():
                 1
             )
         )
+
+        if len(api_check) >= 15:
+            aws_usw2_create = asyncio.create_task(
+                create_ec2_instance(
+                    AwsResources.prod.region,
+                    AwsResources.prod.ami_id,
+                    AwsResources.prod.instance_type,
+                    USW2_INSTANCE_NAME[0],
+                    os.environ['SSH_KEY_USW2'],
+                    1,
+                    1
+                )
+            )
+            await aws_usw2_create
+            logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
+
         await aws_use1_create
+        logging.info(f'AWS USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
 
         # Azure resource group creation
         azure_eus_create_rg = asyncio.create_task(
@@ -76,6 +93,15 @@ async def main():
             create_ip(azure_eus_create_rg.result())
         )
 
+        await azure_eus_create_vnet
+        logging.info('created azure vnet')
+
+        await azure_eus_create_sub
+        logging.info('created azure subnet')
+
+        await azure_eus_create_ip
+        logging.info('created azure ip address')
+
         # Azure nic creation
         azure_eus_create_nic = asyncio.create_task(
             create_nic(
@@ -85,11 +111,8 @@ async def main():
             )
         )
 
-        # These 4 need to be created before creating the Azure vm!
-        await azure_eus_create_vnet
-        await azure_eus_create_sub
-        await azure_eus_create_ip
         await azure_eus_create_nic
+        logging.info('created azure nic')
 
         # Azure vm creation
         azure_eus_create_vm = asyncio.create_task(
@@ -104,25 +127,7 @@ async def main():
             )
         )
         await azure_eus_create_vm
-
-        if len(api_check) >= 10:
-            aws_usw2_create = asyncio.create_task(
-                create_ec2_instance(
-                    AwsResources.prod.region,
-                    AwsResources.prod.ami_id,
-                    AwsResources.prod.instance_type,
-                    USW2_INSTANCE_NAME[0],
-                    os.environ['SSH_KEY_USW2'],
-                    1,
-                    1
-                )
-            )
-            await aws_usw2_create
-
-            logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
-
-        logging.info(f'AWS USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
-        logging.info(f'Azure EUS Instance: {azure_eus_create_vm.result()}')
+        logging.info(f'Azure EUS Instance: {azure_eus_create_vm.result().name} and ID {azure_eus_create_vm.result().vm_id}')
 
         '''
         UNCOMMENT LINES BELOW TO TERMINATE INSTANCES
@@ -138,7 +143,7 @@ async def main():
         # else:
         #     logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
         #
-        # if len(api_check) >= 10:
+        # if len(api_check) >= 15:
         #     aws_usw2_destroy = destroy_ec2_instance(
         #         [aws_usw2_create.result()["Instances"][0]["InstanceId"]],
         #         AwsResources.prod.region
