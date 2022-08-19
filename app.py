@@ -8,6 +8,7 @@ from packages import ApiEndpoint, \
     create_subnet, \
     create_vm, \
     create_vnet, \
+    destroy_vm, \
     destroy_ec2_instance
 from time import perf_counter
 from typing import Final
@@ -38,7 +39,7 @@ async def main():
 
         logging.info(f'API: {api_check}')
 
-        # AWS EC2 instance creation
+        # AWS EC2 instance creation in us-east-1
         aws_use1_create = asyncio.create_task(
             create_ec2_instance(
                 AwsResources.dev.region,
@@ -52,6 +53,7 @@ async def main():
         )
 
         if len(api_check) >= 15:
+            # AWS EC2 instance creation in us-west-2
             aws_usw2_create = asyncio.create_task(
                 create_ec2_instance(
                     AwsResources.prod.region,
@@ -63,11 +65,6 @@ async def main():
                     1
                 )
             )
-            await aws_usw2_create
-            logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
-
-        await aws_use1_create
-        logging.info(f'AWS USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
 
         # Azure resource group creation
         azure_eus_create_rg = asyncio.create_task(
@@ -114,7 +111,7 @@ async def main():
         await azure_eus_create_nic
         logging.info('created azure nic')
 
-        # Azure vm creation
+        # Azure vm creation in eastus
         azure_eus_create_vm = asyncio.create_task(
             create_vm(
                 azure_eus_create_rg.result(),
@@ -126,13 +123,28 @@ async def main():
                 azure_eus_create_nic.result().id
             )
         )
+
+        await aws_use1_create
         await azure_eus_create_vm
-        logging.info(f'Azure EUS Instance: {azure_eus_create_vm.result().name} and ID {azure_eus_create_vm.result().vm_id}')
+        logging.info(f'Azure EUS Instance: {azure_eus_create_vm.result().name} and ID: {azure_eus_create_vm.result().vm_id}')
+        logging.info(f'AWS USE1 Instance: {aws_use1_create.result()["Instances"][0]["InstanceId"]}')
+
+        if len(api_check) >= 15:
+            await aws_usw2_create
+            logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
 
         '''
         UNCOMMENT LINES BELOW TO TERMINATE INSTANCES
         FOR TESTING ONLY!
         '''
+        #
+        # DESTROY_MSG = """
+        #
+        #         DESTROYING INSTANCES!!!
+        #
+        # """
+        # logging.info(DESTROY_MSG)
+        #
         # aws_use1_destroy = destroy_ec2_instance(
         #     [aws_use1_create.result()["Instances"][0]["InstanceId"]],
         #     AwsResources.dev.region
@@ -155,6 +167,13 @@ async def main():
         #         logging.info(
         #           f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
         #          )
+        #
+        # azure_eus_destroy = destroy_vm(
+        #     azure_eus_create_rg.result(),
+        #     EUS_VM_NAME[0]
+        # )
+        # logging.info(f'Azure EUS {EUS_VM_NAME[0]} has been destroyed')
+
     except Exception as e:
         logging.error(e)
 

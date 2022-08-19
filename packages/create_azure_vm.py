@@ -12,10 +12,13 @@ async def create_vm(
         nic_id: str) -> dict:
     """
     Creates Ubuntu 20.04.0-LTS virtual machine
-    :param rg_name:
-    :param vm_name:
-    :param location:
-    :param vm_size:
+    :param rg_name: resource group name
+    :param vm_name: vm name
+    :param location: AZ location
+    :param vm_size: vm size
+    :param ssh_user: ssh username
+    :param ssh_pwd: ssh password
+    :param nic_id: Azure network interface ID
     :return:
     """
     compute_client = ComputeManagementClient(AzureResources.dev.get_az_cred, AzureResources.dev.get_az_sub_id)
