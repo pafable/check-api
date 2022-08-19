@@ -1,5 +1,7 @@
+from azure.identity import DefaultAzureCredential
 from enum import Enum
 from typing import Final
+import boto3
 
 
 class ApiEndpoint(Enum):
@@ -21,29 +23,47 @@ class ApiEndpoint(Enum):
         return f'api endpoint {self.url} and position {self.position}'
 
 
-class Ec2Images(Enum):
+class AwsResources(Enum):
     """
-    AWS ami images and regions
-    us-east-1 - ami-090fa75af13c156b4
-    us-west-2 - ami-0cea098ed2ac54925
-    (more to be added)
+    Constants for resources stored or used in AWS
     """
-    USE1: Final = ('ami-090fa75af13c156b4', 'us-east-1')
-    USW2: Final = ('ami-0cea098ed2ac54925', 'us-west-2')
+    dev: Final = ('t2.micro', 'azure-subscription-id-dev', 'us-east-1', 'ami-090fa75af13c156b4')
+    prod: Final = ('t3.large', 'azure-subscription-id-prod', 'us-west-2', 'ami-0cea098ed2ac54925')
 
-    def __init__(self, ami_id, region: str) -> None:
-        self.ami_id = ami_id
-        self.region = region
-
-
-class InstanceTypes(Enum):
-    """
-    AWS instance types
-    Dev - t2.micro
-    Prod - t3.large
-    """
-    dev: Final = 't2.micro'
-    prod: Final = 't3.large'
-
-    def __init__(self, instance_type: str) -> None:
+    def __init__(self, instance_type: str, az_sub_id: str, region: str, ami_id: str) -> None:
         self.instance_type = instance_type
+        self.az_sub_id = az_sub_id
+        self.region = region
+        self.ami_id = ami_id
+
+
+class AzureResources(Enum):
+    """
+    Constants for Resources in Azure
+    """
+    dev: Final = ('Standard_B1s', 'eastus', 'dev-vnet', 'dev-subnet', 'dev-ip', 'dev-ip-config', 'dev-nic')
+
+    def __init__(self,
+                 vm_size: str,
+                 location: str,
+                 vnet_name: str,
+                 subnet_name: str,
+                 ip_name: str,
+                 ip_conf_name: str,
+                 nic_name: str) -> None:
+        self.vm_size = vm_size
+        self.location = location
+        self.vnet_name = vnet_name
+        self.subnet_name = subnet_name
+        self.ip_name = ip_name
+        self.ip_conf_name = ip_conf_name
+        self.nic_name = nic_name
+
+    @property
+    def get_az_sub_id(self) -> str:
+        ssm = boto3.client('ssm', region_name=AwsResources.dev.region)
+        return ssm.get_parameter(Name=AwsResources.dev.az_sub_id, WithDecryption=True)["Parameter"]["Value"]
+
+    @property
+    def get_az_cred(self):
+        return DefaultAzureCredential(exclude_shared_token_cache_credential=True)
