@@ -1,15 +1,17 @@
-from packages import ApiEndpoint, \
-    AwsResources, \
-    AzureResources, \
-    create_ec2_instance, \
-    create_ip, \
-    create_nic, \
-    create_rg, \
-    create_subnet, \
-    create_vm, \
-    create_vnet, \
-    destroy_vm, \
+from packages import (
+    ApiEndpoint,
+    AwsResources,
+    AzureResources,
+    create_ec2_instance,
+    create_ip,
+    create_nic,
+    create_rg,
+    create_subnet,
+    create_vm,
+    create_vnet,
+    destroy_vm,
     destroy_ec2_instance
+)
 from time import perf_counter
 from typing import Final
 from urllib.request import urlopen
