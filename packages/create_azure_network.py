@@ -36,8 +36,7 @@ async def create_subnet(rg: str) -> str:
         AzureResources.dev.subnet_name,
         {"address_prefix": "10.0.0.0/24"}
     )
-    subnet_result = subnet.result()
-    return subnet_result
+    return subnet.result()
 
 
 async def create_ip(rg: str) -> str:
