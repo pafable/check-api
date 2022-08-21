@@ -53,14 +53,15 @@ class AwsInstance:
         )
 
     @staticmethod
-    def destroy(instance_id: str):
+    def destroy(instance_id: str, region: str):
         return destroy_ec2_instance(
-            instance_id
+            instance_id,
+            region
         )
 
 
 class AzureInstance:
-    def __init__(self, rg_nam: str, location: str, vm_name: str, vm_size: str, vm_user: str, vm_pass: str, nic: str):
+    def __init__(self, rg_nam: str, vm_name: str, location: str, vm_size: str, vm_user: str, vm_pass: str, nic: str):
         self.rg_name = rg_nam
         self.location = location
         self.vm_name = vm_name
@@ -70,7 +71,7 @@ class AzureInstance:
         self.nic = nic
 
     def create(self):
-        create_vm(
+        return create_vm(
             self.rg_name,
             self.vm_name,
             self.location,
@@ -80,10 +81,31 @@ class AzureInstance:
             self.nic
         )
 
-    def destroy(self):
-        destroy_vm(
-            self.rg_name,
-            self.vm_name
+    @staticmethod
+    def create_vnet_(rg_name: str):
+        return create_vnet(rg_name)
+
+    @staticmethod
+    def create_sub_(rg_name: str):
+        return create_subnet(rg_name)
+
+    @staticmethod
+    def create_ip_(rg_name: str):
+        return create_ip(rg_name)
+
+    @staticmethod
+    def create_nic_(rg_name: str, subnet_id: str, ip_addr_id: str):
+        return create_nic(
+            rg_name,
+            subnet_id,
+            ip_addr_id
+        )
+
+    @staticmethod
+    def destroy(rg_name: str, vm_name: str):
+        return destroy_vm(
+            rg_name,
+            vm_name
         )
 
 
@@ -110,16 +132,16 @@ async def main():
 
         if len(api_check) >= 15:
             # AWS EC2 instance creation in us-west-2
-            aws_usw2_create = asyncio.create_task(
-                create_ec2_instance(
-                    AwsResources.prod.region,
-                    AwsResources.prod.ami_id,
-                    AwsResources.prod.instance_type,
-                    USW2_INSTANCE_NAME[0],
-                    os.environ['SSH_KEY_USW2'],
-                    1,
-                    1
-                )
+            aws_usw2 = AwsInstance(
+                AwsResources.prod.region,
+                AwsResources.prod.ami_id,
+                AwsResources.prod.instance_type,
+                USW2_INSTANCE_NAME[0],
+                os.environ['SSH_KEY_USW2']
+            )
+
+            aws_usw2_instance = asyncio.create_task(
+                aws_usw2.create()
             )
 
         # Azure resource group creation
@@ -133,31 +155,31 @@ async def main():
 
         # Azure vnet creation
         azure_eus_create_vnet = asyncio.create_task(
-            create_vnet(azure_eus_create_rg.result())
+            AzureInstance.create_vnet_(azure_eus_create_rg.result())
         )
 
         # Azure subnet creation
         azure_eus_create_sub = asyncio.create_task(
-            create_subnet(azure_eus_create_rg.result())
+            AzureInstance.create_sub_(azure_eus_create_rg.result())
         )
 
         # Azure ip address creation
         azure_eus_create_ip = asyncio.create_task(
-            create_ip(azure_eus_create_rg.result())
+            AzureInstance.create_ip_(azure_eus_create_rg.result())
         )
 
         await azure_eus_create_vnet
-        logging.info('created azure vnet')
+        logging.info('created azure vnet'.upper())
 
         await azure_eus_create_sub
-        logging.info('created azure subnet')
+        logging.info('created azure subnet'.upper())
 
         await azure_eus_create_ip
-        logging.info('created azure ip address')
+        logging.info('created azure ip address'.upper())
 
         # Azure nic creation
         azure_eus_create_nic = asyncio.create_task(
-            create_nic(
+            AzureInstance.create_nic_(
                 azure_eus_create_rg.result(),
                 azure_eus_create_sub.result().id,
                 azure_eus_create_ip.result().id
@@ -165,7 +187,7 @@ async def main():
         )
 
         await azure_eus_create_nic
-        logging.info('created azure nic')
+        logging.info('created azure nic'.upper())
 
         # Azure vm creation in eastus
         azure_eus = AzureInstance(
@@ -182,21 +204,21 @@ async def main():
             azure_eus.create()
         )
 
-        await aws_use1_instance
-        await azure_eus_vm
+        await aws_use1_instance and await azure_eus_vm
+
         logging.info(f'Azure EUS Instance: {azure_eus_vm.result().name} and ID: {azure_eus_vm.result().vm_id}')
         logging.info(f'AWS USE1 Instance: {aws_use1_instance.result()["Instances"][0]["InstanceId"]}')
 
         if len(api_check) >= 15:
-            await aws_usw2_create
-            logging.info(f'AWS USW2 Instance: {aws_usw2_create.result()["Instances"][0]["InstanceId"]}')
+            await aws_usw2_instance
+            logging.info(f'AWS USW2 Instance: {aws_usw2_instance.result()["Instances"][0]["InstanceId"]}')
 
         '''
         UNCOMMENT LINES BELOW TO TERMINATE INSTANCES
         FOR TESTING ONLY!
         '''
 
-        DESTROY_MSG = """
+        DESTROY_MSG: Final = """
 
                 DESTROYING INSTANCES!!!
 
@@ -204,7 +226,8 @@ async def main():
         logging.info(DESTROY_MSG)
 
         aws_use1_destroy = AwsInstance.destroy(
-            aws_use1_instance.result()["Instances"][0]["InstanceId"]
+            aws_use1_instance.result()["Instances"][0]["InstanceId"],
+            AwsResources.dev.region
         )
 
         if aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
@@ -214,7 +237,7 @@ async def main():
 
         if len(api_check) >= 15:
             aws_usw2_destroy = destroy_ec2_instance(
-                [aws_usw2_create.result()["Instances"][0]["InstanceId"]],
+                [aws_usw2_instance.result()["Instances"][0]["InstanceId"]],
                 AwsResources.prod.region
             )
 
@@ -225,7 +248,7 @@ async def main():
                   f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
                  )
 
-        azure_eus_destroy = destroy_vm(
+        AzureInstance.destroy(
             azure_eus_create_rg.result(),
             EUS_VM_NAME[0]
         )
