@@ -12,4 +12,4 @@ def destroy_rg(rg_name: str):
     rg = resource_client.resource_groups.begin_delete(
         rg_name
     )
-    return rg_name
+    return rg
