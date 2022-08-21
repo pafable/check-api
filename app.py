@@ -9,6 +9,7 @@ from packages import (
     create_subnet,
     create_vm,
     create_vnet,
+    destroy_rg,
     destroy_vm,
     destroy_ec2_instance
 )
@@ -102,7 +103,11 @@ class AzureInstance:
         )
 
     @staticmethod
-    def destroy(rg_name: str, vm_name: str):
+    def destroy_rg_(rg_name: str):
+        return destroy_rg(rg_name)
+
+    @staticmethod
+    def destroy_vm_(rg_name: str, vm_name: str):
         return destroy_vm(
             rg_name,
             vm_name
@@ -220,6 +225,7 @@ async def main():
 
         DESTROY_MSG: Final = """
 
+                TEST COMPLETE
                 DESTROYING INSTANCES!!!
 
         """
@@ -236,8 +242,8 @@ async def main():
             logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
 
         if len(api_check) >= 15:
-            aws_usw2_destroy = destroy_ec2_instance(
-                [aws_usw2_instance.result()["Instances"][0]["InstanceId"]],
+            aws_usw2_destroy = AwsInstance.destroy(
+                aws_usw2_instance.result()["Instances"][0]["InstanceId"],
                 AwsResources.prod.region
             )
 
@@ -248,14 +254,13 @@ async def main():
                   f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
                  )
 
-        AzureInstance.destroy(
-            azure_eus_create_rg.result(),
-            EUS_VM_NAME[0]
+        AzureInstance.destroy_rg_(
+            azure_eus_create_rg.result()
         )
         logging.info(f'Azure EUS {EUS_VM_NAME[0]} has been destroyed')
 
     except Exception as e:
-        logging.error(e)
+        logging.error(e.with_traceback())
 
 if __name__ == '__main__':
     asyncio.run(main())
