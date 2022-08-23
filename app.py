@@ -21,6 +21,7 @@ import json
 import logging
 import os
 import ssl
+import sys
 
 SUFFIX: Final = ('test-instance',)
 USE1_INSTANCE_NAME: Final = (f'{AwsResources.dev.region}-{SUFFIX[0]}',)
@@ -218,46 +219,42 @@ async def main():
             await aws_usw2_instance
             logging.info(f'AWS USW2 Instance: {aws_usw2_instance.result()["Instances"][0]["InstanceId"]}')
 
-        '''
-        UNCOMMENT LINES BELOW TO TERMINATE INSTANCES
-        FOR TESTING ONLY!
-        '''
+        if sys.argv[1] == 'test':
+            DESTROY_MSG: Final = """
 
-        DESTROY_MSG: Final = """
+                    TEST COMPLETE
+                    DESTROYING INSTANCES!!!
 
-                TEST COMPLETE
-                DESTROYING INSTANCES!!!
+            """
+            logging.info(DESTROY_MSG)
 
-        """
-        logging.info(DESTROY_MSG)
-
-        aws_use1_destroy = AwsInstance.destroy(
-            aws_use1_instance.result()["Instances"][0]["InstanceId"],
-            AwsResources.dev.region
-        )
-
-        if aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            raise logging.error(f'Destroy error code: {aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
-        else:
-            logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
-
-        if len(api_check) >= 15:
-            aws_usw2_destroy = AwsInstance.destroy(
-                aws_usw2_instance.result()["Instances"][0]["InstanceId"],
-                AwsResources.prod.region
+            aws_use1_destroy = AwsInstance.destroy(
+                aws_use1_instance.result()["Instances"][0]["InstanceId"],
+                AwsResources.dev.region
             )
 
-            if aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
-                raise logging.error(f'Destroy error code: {aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
+            if aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
+                raise logging.error(f'Destroy error code: {aws_use1_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
             else:
-                logging.info(
-                  f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
-                 )
+                logging.info(f'AWS USE1 {aws_use1_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed')
 
-        AzureInstance.destroy_rg_(
-            azure_eus_create_rg.result()
-        )
-        logging.info(f'Azure EUS {EUS_VM_NAME[0]} has been destroyed')
+            if len(api_check) >= 15:
+                aws_usw2_destroy = AwsInstance.destroy(
+                    aws_usw2_instance.result()["Instances"][0]["InstanceId"],
+                    AwsResources.prod.region
+                )
+
+                if aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"] != 200:
+                    raise logging.error(f'Destroy error code: {aws_usw2_destroy["ResponseMetadata"]["HTTPStatusCode"]}')
+                else:
+                    logging.info(
+                      f'AWS USW2 {aws_usw2_destroy["TerminatingInstances"][0]["InstanceId"]} has been destroyed'
+                     )
+
+            AzureInstance.destroy_rg_(
+                azure_eus_create_rg.result()
+            )
+            logging.info(f'Azure EUS {EUS_VM_NAME[0]} has been destroyed')
 
     except Exception as e:
         logging.error(e.with_traceback())
