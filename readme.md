@@ -23,6 +23,17 @@ Set the following environment variables.
 - VM_USER
 - VM_PASS
 
+### Executing Code
+Create only:
+```
+python3 app.py
+```
+
+Create and destroy instances after they have been created for testing purposes:
+```
+python3 app.py test
+```
+
 ### SDKs Used
 - https://github.com/boto/boto3
 - https://github.com/Azure/azure-sdk-for-python
