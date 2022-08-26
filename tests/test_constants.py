@@ -23,11 +23,6 @@ class TestConstants(unittest.TestCase):
         assert AzureResources.dev.value
         assert AzureResources.dev.get_az_cred
 
-        self.assertEqual(
-            os.environ['AZURE_SUB_ID'],
-            AzureResources.dev.get_az_sub_id
-        )
-
 
 if __name__ == '__main__':
     unittest.main()
