@@ -1,14 +1,15 @@
 name: Check API CI Tests
 on: [push]
 env:
-  AZURE_CLIENT_ID: ${{ AZURE_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ AZURE_CLIENT_SECRET }}
-  AZURE_SUB_ID: ${{ AZURE_SUB_ID }}
-  AZURE_TENANT_ID: ${{ AZURE_TENANT_ID }}
-  SSH_KEY_USE1: ${{ SSH_KEY_USE1 }}
-  SSH_KEY_USW2: ${{ SSH_KEY_USW2 }}
-  VM_PASS: ${{ VM_PASS }}
-  VM_USER: ${{ VM_USER }}
+  FIZZ: ${{ FIZZ }}
+#  AZURE_CLIENT_ID: ${{ AZURE_CLIENT_ID }}
+#  AZURE_CLIENT_SECRET: ${{ AZURE_CLIENT_SECRET }}
+#  AZURE_SUB_ID: ${{ AZURE_SUB_ID }}
+#  AZURE_TENANT_ID: ${{ AZURE_TENANT_ID }}
+#  SSH_KEY_USE1: ${{ SSH_KEY_USE1 }}
+#  SSH_KEY_USW2: ${{ SSH_KEY_USW2 }}
+#  VM_PASS: ${{ VM_PASS }}
+#  VM_USER: ${{ VM_USER }}
 jobs:
     run-unit-tests:
       runs-on: ubuntu-latest
