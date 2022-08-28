@@ -5,4 +5,12 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
+        - run: python --version
+        - run: | 
+            pip install \
+              boto3 \
+              azure-mgmt-compute \
+              azure-mgmt-core \
+              azure-mgmt-network \
+              azure-mgmt-resource
         - run: python -m unittest discover tests
