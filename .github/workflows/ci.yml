@@ -1,0 +1,23 @@
+name: Check API CI Tests
+on: [push]
+env:
+  FIZZ: ${{ secrets.FIZZ }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_SUB_ID: ${{ secrets.AZURE_SUB_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  SSH_KEY_USE1: ${{ secrets.SSH_KEY_USE1 }}
+  SSH_KEY_USW2: ${{ secrets.SSH_KEY_USW2 }}
+  VM_PASS: ${{ secrets.VM_PASS }}
+  VM_USER: ${{ secrets.VM_USER }}
+jobs:
+    run-unit-tests:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - run: python --version
+        - run: |
+            echo "Secret test: Fizz = ${{ env.FIZZ }}"
+            pip install -r requirements.txt
+            python -m unittest discover tests
+
