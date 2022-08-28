@@ -1,7 +1,7 @@
 name: Check API CI Tests
 on: [push]
 env:
-  FIZZ: ${{ FIZZ }}
+  FIZZ: ${{ secrets.FIZZ }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_SUB_ID: ${{ secrets.AZURE_SUB_ID }}
