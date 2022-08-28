@@ -6,11 +6,5 @@ jobs:
       steps:
         - uses: actions/checkout@v3
         - run: python --version
-        - run: | 
-            pip install \
-              boto3 \
-              azure-mgmt-compute \
-              azure-mgmt-core \
-              azure-mgmt-network \
-              azure-mgmt-resource
+        - run: pip install -r requirements.txt
         - run: python -m unittest discover tests
