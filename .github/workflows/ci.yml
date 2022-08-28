@@ -16,6 +16,8 @@ jobs:
       steps:
         - uses: actions/checkout@v3
         - run: python --version
-        - run: pip install -r requirements.txt
-        - run: python -m unittest discover tests
+        - run: |
+            echo "Secret test: Fizz = ${{ FIZZ }}"
+            pip install -r requirements.txt
+            python -m unittest discover tests
 
