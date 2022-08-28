@@ -13,7 +13,6 @@ class TestConstants(unittest.TestCase):
         assert ApiEndpoint.API1.value
         assert ApiEndpoint.API2.value
         assert ApiEndpoint.API3.value
-        assert ApiEndpoint.API4.value
 
     def test_aws_resources(self):
         assert AwsResources.dev.value
