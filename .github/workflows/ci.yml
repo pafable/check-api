@@ -1,7 +1,9 @@
 name: Check API CI Tests
-on: [push]
+on:
+  push:
+    branches:
+      - 'dev/*'
 env:
-  FIZZ: ${{ secrets.FIZZ }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_SUB_ID: ${{ secrets.AZURE_SUB_ID }}
@@ -17,7 +19,6 @@ jobs:
         - uses: actions/checkout@v3
         - run: python --version
         - run: |
-            echo "Secret test: Fizz = ${{ env.FIZZ }}"
             pip install -r requirements.txt
             python -m unittest discover tests
 
