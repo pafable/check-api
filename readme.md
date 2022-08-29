@@ -23,6 +23,16 @@ Set the following environment variables.
 - VM_USER
 - VM_PASS
 
+### Packages to Install
+- azure-common
+- azure-core
+- azure-identity
+- azure-mgmt-compute
+- azure-mgmt-core
+- azure-mgmt-network
+- azure-mgmt-resource
+- boto3
+
 ### Executing Code
 Create only:
 ```
