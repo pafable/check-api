@@ -1,5 +1,5 @@
 # Check-API
-update 6
+update 7
 This will deploy an instance/virtual machine in AWS and Azure.
 
 REQUIRED PYTHON VERSION: 3.8 or newer
