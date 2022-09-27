@@ -17,7 +17,7 @@ jmespath==1.0.1
 msal==1.18.0
 msal-extensions==1.0.0
 msrest==0.7.1
-oauthlib==3.2.0
+oauthlib==3.2.1
 portalocker==2.5.1
 pycparser==2.21
 PyJWT==2.4.0
