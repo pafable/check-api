@@ -1,4 +1,5 @@
 # Check-API
+[![Check API CI Tests](https://github.com/pafable/check-api/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/pafable/check-api/actions/workflows/ci.yml)
 
 This will deploy an instance/virtual machine in AWS and Azure.
 
