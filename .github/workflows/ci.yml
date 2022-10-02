@@ -26,6 +26,6 @@ jobs:
       - name: check python version
         run: python3 --version
       - name: install tox
-        run: pip install --upgrade tox pip3
+        run: pip install --upgrade tox pip
       - name: run tests
         run: make test
