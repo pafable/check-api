@@ -8,4 +8,5 @@ install:
 	${PIP} install -r requirements.txt
 
 test:
-	${PY} -m unittest discover tests
+	#${PY} -m unittest discover tests
+	tox
