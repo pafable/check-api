@@ -1,5 +1,6 @@
 PY = $(shell python3)
 PIP = $(shell pip3)
+TOX = $(shell tox)
 
 deploy:
 	${PY} app.py
@@ -9,4 +10,4 @@ install:
 
 test:
 	#${PY} -m unittest discover tests
-	tox
+	${TOX}
