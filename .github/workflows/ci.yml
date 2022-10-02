@@ -24,5 +24,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: python3 --version
-      - run: make install
       - run: make test
