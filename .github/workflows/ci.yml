@@ -23,5 +23,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - run: python3 --version
-      - run: make test
+      - name: check python version
+        run: python3 --version
+      - name: install tox
+        run: pip3 install --upgrade tox pip3
+      - name: run tests
+        run: make test
