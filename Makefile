@@ -1,5 +1,5 @@
 PY = $(shell python3)
-PIP = $(shell pip)
+PIP = $(shell pip3)
 
 deploy:
 	${PY} app.py
