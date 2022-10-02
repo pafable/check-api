@@ -15,11 +15,19 @@ env:
   VM_PASS: ${{ secrets.VM_PASS }}
   VM_USER: ${{ secrets.VM_USER }}
 jobs:
-    run-unit-tests:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - run: python --version
-        - run: pip install -r requirements.txt
-        - run: python -m unittest discover tests
-
+  run-unit-tests:
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: check python version
+        run: python3 --version
+      - name: check pip version
+        run: pip3 --version
+      - name: install tox
+        run: pip3 install --upgrade tox
+      - name: run tests
+        run: tox
