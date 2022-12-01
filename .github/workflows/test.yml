@@ -8,7 +8,8 @@ env:
   FOO: "BAR"
 
   jobs:
-    steps:
-      - uses: actions/checkout@v3
-      - name: Echo FOO
-        run: echo ${FOO}
+    test-job:
+      steps:
+        - uses: actions/checkout@v3
+        - name: Echo FOO
+          run: echo ${FOO}
