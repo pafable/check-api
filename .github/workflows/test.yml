@@ -4,8 +4,8 @@ on:
     branches:
       - 'test/this-is-a-test'
 
-  env:
-    FOO: "BAR"
+env:
+  FOO: "BAR"
 
   jobs:
     steps:
