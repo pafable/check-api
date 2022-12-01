@@ -7,9 +7,9 @@ on:
 env:
   FOO: "BAR"
 
-  jobs:
-    test-job:
-      steps:
-        - uses: actions/checkout@v3
-        - name: Echo FOO
-          run: echo ${FOO}
+jobs:
+  test-job:
+    steps:
+      - uses: actions/checkout@v3
+      - name: Echo FOO
+        run: echo ${FOO}
