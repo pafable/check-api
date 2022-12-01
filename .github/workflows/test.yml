@@ -1,0 +1,14 @@
+name: This is a test
+on:
+  push:
+    branches:
+      - 'test/this-is-a-test'
+
+  env:
+    FOO: "BAR"
+
+  jobs:
+    steps:
+      - uses: actions/checkout@v3
+      - name: Echo FOO
+        run: echo ${FOO}
