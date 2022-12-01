@@ -9,8 +9,8 @@ env:
 
 jobs:
   test-job:
-    runs-on: ubunutu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Echo FOO
+      - name: Echoing environment variable FOO
         run: echo ${FOO}
